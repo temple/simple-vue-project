@@ -110,7 +110,7 @@ git push --set-upstream origin master
 #### Development tools test
 Because `lite-server` has been the chosen server for testing the project, we should consider creating a [`bs-config.json` file](https://www.browsersync.io/docs/options) as told in [`lite-server` github page](https://github.com/johnpapa/lite-server#custom-configuration) once the server is tested
 
-This file should contain code [like this](./commit/5e5e4e7):
+This file should contain code [like this](../5e5e4e7/bs-config.json):
 ```
 {
   "files": [ "./**/*.{html,htm,css,js,mjs}" ],
@@ -123,7 +123,7 @@ This file should contain code [like this](./commit/5e5e4e7):
 npx lite-server
 ```
 
-After that, the file may become this [version](./commit/8e0b972)  
+After that, the file may become this [version](../8e0b972/bs-config.json)  
 
 #### Project dependencies provision
 Having our environment ready for development, the last set of tools we might acquire are the above related tools the following way:
@@ -131,5 +131,15 @@ Having our environment ready for development, the last set of tools we might acq
 npm install webpack @babel/core @babel/cli babel-loader @babel/preset-env
 ```
 
-###
-Because `lite-server` has been the chosen server for testing the project, we should consider creating a [`bs-config.json` file](https://www.browsersync.io/docs/options) as told in [`lite-server` github page](https://github.com/johnpapa/lite-server#custom-configuration) once the server is tested
+#### Main entry Module
+Because we used `@vue/cli` to create an `index.html` file [which loads the _vue_ javascript library](../5ae524f/index.html#L5) and includes a sample _Vue_ application, we may want to develop a main javascript module using a [_Vue_ instance](https://vuejs.org/v2/guide/instance.html) which may replace the inline code in that `index.html` file.  
+For just conventions, we will call our main entry module `main.mjs`, where `mjs` is recommended for those javascript files containing an ES6 javascript module.  
+So we proceed in `main.js` with some [initial code copied from index.html](../713540a/src/main.mjs).  
+
+#### Vue Component
+Because our application is using some data wrapped with html tags, such `{{ greeting }}` (which is wrapped with an `<h1>` tag), we wonder to use a [_Vue component_](https://vuejs.org/v2/guide/components.html) instead of it. Our component will be [registered locally](https://vuejs.org/v2/guide/components-registration.html#Local-Registration) in our _Vue instance_.  
+So, we've got an adapted [`index.html` file](../2a59468/index.html#L10) including a `<greetings>` tag for our new component, [which has beed created](../2a59468/src/components/greetings.mjs) and imported in our [new version of `main.mjs` file](../2a59468/src/main.mjs#L1), from where [its registration inside our _Vue instance_ is done](../2a59468/src/main.mjs#L5-L7), by the `components` key.  
+Finally, in order to let the browser understand the `import` directive, which belongs to the "_modular ES6 Javascript world_", we have to add the attribute `type` to the `<script>` tag at the end of [our `index.html`](../2a59468/index.html#L33).
+
+
+
