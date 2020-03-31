@@ -204,3 +204,43 @@ Our bundle is ready as [`dist/es6.bundle.js`](../dc6dce8/dist/es6.bundle.js).
 Arrived here, we got a `dist/es6.bundle.js` javascript file with our application. We may wonder to test it using `lite-server`, but have to use it from our `index.html` [applying this minor change](../../commit/9b4ca3e).  
 After that we can launch `npx lite-server` and test manually our application in different browsers.
 
+##### Placing it all together
+Our project seem to run correctly in common browsers, event MS IExplorer 11. That's why we are not using any other ES6 feature rather than the use of `import`, `export` or `require` directives.  
+If we really wonder to check our project can include [ES6 features](http://es6-features.org/) having no worries about it can be run on old browsers, our challenge is to effectively add some of this features in our javascript files before bundling.  
+By the way, in our `src/main.mjs` there is a variable we can declare with `let` operator instead of `var`, and there is an anonymous function we can declare using the _arrow function_ syntax. [Here is the result](../../commit/26c7cac).    
+If we bundle our application again using webpack, [some slightly differences](../../commit/2a51b9a) will appear on `es6.bundle.js` file. These differences are just the features we've used in the `src/main.mjs`.  
+  
+If we test the result in old browsers, such IE Explorer 11, we will see syntax errors appear on the console.  
+Then, we must combine _webpack_ and _babel_ facilities in order to get a bundle compatible with browsers not supporting ES6.  
+  
+Then we need to use `babel-loader`, which is a "babel module loader for webpack". Using this _loader_ is easy as adding some webpack configuration entries:  
+```
+module: {
+  rules: [
+    {
+      test: /\.m?js$/,
+      exclude: /(node_modules|bower_components)/,
+      use: {
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env']
+        }
+      }
+    }
+  ]
+}
+```
+  
+Previous entries, are based on _Usage_ section in the [_babel-loader_ front documentation page at github.com][babel-loader-usage], and fit perfectly our needs!
+[babel-loader-usage]: https://github.com/babel/babel-loader#usage
+  
+Then, we can adjust our `webpack.config.js` introducing [this "module" entry](../d14dd48/webpack.config.js#L9-L22), and changing the [_output filename_](../d14dd48/webpack.config.js#L7). After that, a minimal change is required in our [`index.html` file](../d14dd48/index.html#L34), using the [new `es5.bundle.js`](../d14dd48/dist/es5.bundle.js) instead of `es6.bundle.js`.
+
+##### Checking the ES5 bundle & removing trash
+If we check our new bundled file by testing `index.html` with `lite-server`, we may see our project serving a _Vue_ application.  
+Then, we won't need (by the moment) our `es6.bundle.js`, `babel.config.js` and `/ES5` javascript files, and [remove them from the project](../../commit/3767386) with `git`, this way:  
+
+```
+git rm dist/es6.bundle.js babel.config.js dist/ES5/main.js dist/ES5/components/greetings.js
+```
+
