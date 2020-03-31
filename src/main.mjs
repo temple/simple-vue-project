@@ -1,6 +1,6 @@
 import greetings from './components/greetings.mjs'
 
-var app = new Vue({
+let app = new Vue({
   el: '#app',
   components: {
     greetings : greetings
@@ -12,10 +12,8 @@ var app = new Vue({
     forumURL: 'http://forum.vuejs.org/'
   },
   methods: {
-    humanizeURL: function (url) {
-      return url
+    humanizeURL: url => url
         .replace(/^https?:\/\//, '')
-        .replace(/\/$/, '')
-    }
+        .replace(/\/$/, '')   
   }
 })
