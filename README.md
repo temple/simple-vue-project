@@ -166,6 +166,41 @@ When just using the `@babel/preset-env` preset, _Babel_ will transpile our indiv
   
 So, let's check it. If we run..
 ```
-node_modules/.bin/babel --out-dir dist/ES5 ./src
+./node_modules/.bin/babel --out-dir dist/ES5 ./src
 ```
 ..[our files will be transpiled in the `dist/ES5` folder](../../commit/61657f7).
+
+##### Minimal Webpack Configuration
+As we can see when checking generated [transpiled files](../../commit/61657f7), they still use the `require` statement which is not a part of [`ES5` specification](https://es5.github.io/).  
+So, **¿how could we face this?**  
+  
+As [explained in this article](https://blog.jakoblind.no/babel-preset-env/) when dealing with several module files what have to be packaged into a single bundled javascript, tools such [_Webpack_](https://webpack.js.org/), [_Rollup_](https://rollupjs.org/) or [_Parcel_](https://parceljs.org/) are required to succeed.  
+  
+In our case _webpack_ has been the chosen one, because is so popular currently.  
+_Webpack_ needs a brief configuration to get ready for "bundling". This configuration initially may look like this:
+```
+const path = require('path');
+
+module.exports = {
+  entry: './src/main.mjs',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: 'es6.bundle.js'
+  }
+};
+```
+Previous configuration is stored in the main _webpack_ configuration file, [called `webpack.config.js`](../1da5732/webpack.config.js), as stated in the [official _webpack_ documentation](https://webpack.js.org/concepts/).  
+  
+After running webpack with:
+```
+./node_modules/.bin/webpack
+```
+  
+Our bundle is ready as [`dist/es6.bundle.js`](../dc6dce8/dist/es6.bundle.js).
+
+**BUT, ¿DOES IT MAKE OUR APPLICATION WORK WITH OLDER BROWSERS, EVEN WITH MODERN ONES?**
+
+##### Checking the bundle
+Arrived here, we got a `dist/es6.bundle.js` javascript file with our application. We may wonder to test it using `lite-server`, but have to use it from our `index.html` [applying this minor change](../../commit/9b4ca3e).  
+After that we can launch `npx lite-server` and test manually our application in different browsers.
+
