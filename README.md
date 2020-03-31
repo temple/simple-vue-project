@@ -128,7 +128,7 @@ After that, the file may become this [version](../8e0b972/bs-config.json)
 #### Project dependencies provision
 Having our environment ready for development, the last set of tools we might acquire are the above related tools the following way:
 ```
-npm install webpack @babel/core @babel/cli babel-loader @babel/preset-env
+npm install webpack webpack-cli @babel/core @babel/cli babel-loader @babel/preset-env
 ```
 
 #### Main entry Module
@@ -141,5 +141,31 @@ Because our application is using some data wrapped with html tags, such `{{ gree
 So, we've got an adapted [`index.html` file](../2a59468/index.html#L10) including a `<greetings>` tag for our new component, [which has beed created](../2a59468/src/components/greetings.mjs) and imported in our [new version of `main.mjs` file](../2a59468/src/main.mjs#L1), from where [its registration inside our _Vue instance_ is done](../2a59468/src/main.mjs#L5-L7), by the `components` key.  
 Finally, in order to let the browser understand the `import` directive, which belongs to the "_modular ES6 Javascript world_", we have to add the attribute `type` to the `<script>` tag at the end of [our `index.html`](../2a59468/index.html#L33).
 
+#### Webpack and Babel enter the game
 
+##### Minimal Babel Configuration
+If we think our project has reached a stage that allows us deploy a pre-release, then we should consider building a distribution able to run in the greater part of browsers.  
+That's why we may use _Babel_ transpiler and it's options, [taken from official documentation](https://babeljs.io/docs/en/options), into a [new project file called `babel.config.js`](../6249832/babel.config.js), as [recommended by _Babel_ official sources](https://babeljs.io/docs/en/configuration).  
+This is how our file may look like for the first time:  
+```
+module.exports = function(api){
+  api.cache(true);
 
+  const presets = ["@babel/preset-env"];
+  const plugins = [];
+
+  return {
+    presets,
+    plugins
+  }
+}
+```
+
+The idea behind the scene is to specify minimal configuration options according to current project needs, and it comes from the ["Babel Configuration Examples" repo](https://github.com/babel/babel-configuration-examples).  
+When just using the `@babel/preset-env` preset, _Babel_ will transpile our individual javascript files from `ES6` version onto `ES5`.  
+  
+So, let's check it. If we run..
+```
+node_modules/.bin/babel --out-dir dist/ES5 ./src
+```
+..[our files will be transpiled in the `dist/ES5` folder](../../commit/61657f7).
