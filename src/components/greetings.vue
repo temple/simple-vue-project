@@ -5,5 +5,5 @@ const GreetingComponent = {
     `
 }
 
-export default GreetingComponent
+module.exports = GreetingComponent
 </script>
