@@ -1,4 +1,4 @@
-import greetings from './components/greetings.mjs'
+import greetings from './components/greetings.vue'
 
 let app = new Vue({
   el: '#app',
