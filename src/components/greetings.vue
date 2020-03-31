@@ -1,3 +1,4 @@
+<script>
 const GreetingComponent = {
     template: `
     <h1>{{ this.$parent.greeting }}</h1>
@@ -5,3 +6,4 @@ const GreetingComponent = {
 }
 
 export default GreetingComponent
+</script>
