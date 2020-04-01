@@ -282,3 +282,54 @@ _vue-loader_ is known to depend on a _NodeJS_ enviroment and is strictly designe
 Therefore there is an **unofficial** version of _vue-loader_ called `http-vue-loader` ([visit here its github repo](https://github.com/FranckFreiburger/http-vue-loader)), what frees us from building our component and can help us check our SFC component is running.
 
 So we need just a [few changes in our `index.html`](../../commit/e81eaa6#diff-eacf331f0ffc35d4b482f1d15a887d3b),  in [our `greetings.vue`](../e81eaa6/src/components/greetings.vue#L8) and also to [our `main.mjs`](../../commit/e81eaa6#diff-2679527f6e24e0cc7252aa29f829f274). 
+
+##### Loading via vue-loader
+Once checked (via `lite-server`) our component still working, is time to think officially (by using `vue-loader` instead of `http-vue-loader` which ain't official at all).  
+  
+Our first step must be installing `vue-loader` along with `vue-template-compiler` ([As stated in the _Vue_ official documentation](https://vue-loader.vuejs.org/guide/#installation)) this way:  
+```
+npm install vue-loader vue-template-compiler
+```
+
+If we read the advisory from _Vue_'s _vue-loader_ page saying .. 
+> _**every time you upgrade `vue` in your project, you should upgrade `vue-template-compiler` to match it as well**_
+
+.. we'll soon notice that we **must** check which version has our new `vue-template-compiler`. Let's  check this way:  
+```
+npm list vue-template-compiler
+```
+
+Previous command revealed us the `vue-template-compiler` version in use.  
+> At the time of writing these lines it was `2.6.11`
+  
+So following the advisory recommendations we must ensure that match between project's `vue` version in use and `vue-template-compiler`.  
+In our case, our need is to force the `<script>` tag in `index.html` to acquire that matching version.
+It is easy as following `unpkg.com/vue` with `@{version number}`; so we've [updated our `index.html`](../5f1c948/index.html#L5).
+
+
+After that, we can include `vue-loader` in the _bundling_ rules performed by _webpack_. This following entry has to be placed as a _module rule_ [in the `webpack.config.js` file](../f5457d8/webpack.config.js#L21-L27), according to [_vue-loader_ official docs](https://vue-loader.vuejs.org/guide/#webpack-configuration):
+```
+  {
+    test: /\.vue$/,
+    exclude: /(node_modules|bower_components)/,
+    use: {
+      loader: 'vue-loader'      
+    }
+  }
+```
+
+and also the following _plugin_ [must be loaded too](../6c979eb/webpack.config.js#L32-L34), in order to apply the rest of matching rules to javascript code comming from _vue's component compilation_:
+```
+ new VueLoaderPlugin()
+```
+
+This plugin requires the import of `vue-loader/lib/plugin` which must be [added as an instruction](../6c979eb/webpack.config.js#L2) at the beginning of `webpack.config.js`.  
+  
+Once we have included `vue-loader` to our _webpack bundling process_, we don't  longer need the old `http-vue-loader` code remains. So we will [recover our old code on `src/main.mjs`](../../commit/3ff3938#diff-2679527f6e24e0cc7252aa29f829f274).
+
+Also, previous [modifications done in `index.html` are no longer necessary](../../commit/2291c0b#diff-eacf331f0ffc35d4b482f1d15a887d3b). Furthermore, we may disable the use of `src/main.mjs` in favor of `dist/es5.bundle.js`.
+
+#### Separating concerns in our SFC
+As explained perfectly in the [official _Vue_ documentation](https://vuejs.org/v2/guide/single-file-components.html#What-About-Separation-of-Concerns), Single File Components carry a separation of concerns by [dividing in language blocks the code what a SFC is compound of](https://vue-loader.vuejs.org/spec.html).  
+
+In consequence [few minor changes](../../commit/0127af3#diff-c60fbef0c98b7e426a482e8e0e37fec2) are desirable in our _greetings_ SFC, including reusing `exports` instead of `module.export` as we don't need `http-vue-loader` anymore (which required it).
