@@ -7,7 +7,7 @@ module.exports = {
     filename: 'es5.bundle.js'
   },
   module: {
-    rules: [
+    rules: [      
       {
         test: /\.m?js$/,
         exclude: /(node_modules|bower_components)/,
@@ -16,6 +16,13 @@ module.exports = {
           options: {
             presets: ['@babel/preset-env']
           }
+        }
+      },
+      {
+        test: /\.vue$/,
+        exclude: /(node_modules|bower_components)/,
+        use: {
+          loader: 'vue-loader'      
         }
       }
     ]
