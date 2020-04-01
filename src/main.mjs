@@ -1,9 +1,9 @@
-//import greetings from './components/greetings.vue'
+import greetings from './components/greetings.vue'
 
 let app = new Vue({
   el: '#app',
   components: {
-    greetings : httpVueLoader('src/components/greetings.vue')
+    greetings : greetings
   },
   data: {
     greeting: 'Welcome to your Vue.js app!',
