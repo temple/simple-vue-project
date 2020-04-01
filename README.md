@@ -5,7 +5,7 @@
 | :--- | :--- |
 | **Description** | This is a training project with the goal of learning the _basics_ of a [_vue_](https://vuejs.org) _simple_ project. |
 | **Languages** | This project is written purely over [_HTML 5_](https://html.spec.whatwg.org/multipage/) and [_ES6 Javascript_](http://es6-features.org/),[_JSON_](https://www.json.org/json-en.html) | 
-| **Techs & Tools** | This project involves the use of [_git_](https://git-scm.com/downloads), [_nodejs_](https://nodejs.org/) and its packages [_lite-server_](https://github.com/johnpapa/lite-server), [_@vue/cli_](https://cli.vuejs.org/) (with its _addon_ [_@vue/cli-init_](https://www.npmjs.com/package/@vue/cli-init). It also has required the use of _node_ packages [_webpack_](https://webpack.js.org/), [_webpack-cli_](https://www.npmjs.com/package/webpack-cli), [_@babel/core_](https://babeljs.io/), [_@babel/cli_](https://babeljs.io/docs/en/babel-cli), [_babel-loader_](https://www.npmjs.com/package/babel-loader) and [_@babel/preset-env_](https://babeljs.io/docs/en/babel-preset-env)
+| **Techs & Tools** | This project involves the use of [_git_](https://git-scm.com/downloads), [_nodejs_](https://nodejs.org/) and its packages [_lite-server_](https://github.com/johnpapa/lite-server), [_@vue/cli_](https://cli.vuejs.org/) (with its _addon_ [_@vue/cli-init_](https://www.npmjs.com/package/@vue/cli-init). It also has required the use of _node_ packages [_webpack_](https://webpack.js.org/), [_webpack-cli_](https://www.npmjs.com/package/webpack-cli), [_@babel/core_](https://babeljs.io/), [_@babel/cli_](https://babeljs.io/docs/en/babel-cli), [_babel-loader_](https://www.npmjs.com/package/babel-loader),  [_@babel/preset-env_](https://babeljs.io/docs/en/babel-preset-env) and [_vue-loader_](https://www.npmjs.com/package/vue-loader)
 | **Thanks to** | [Juan Andrés Núñez (@wmedia)](https://github.com/juanwmedia), for [his wonderful podcast on youtube](https://www.youtube.com/playlist?list=PLM-Y_YQmMEqDS5u_O4xB651Mli0ShWyfh)  |
 | **Credits** | [temple](https://github.com/temple) | 
 
@@ -81,8 +81,15 @@ At last, those requirements match those tools intended to power-up our project. 
     npm install babel-loader
     ```
 1. **babel preset-env**  
-  This package can be summarized as "a babel preset for each environment". In other words this mean that this package allows to use the latest javascript without needing to manage syntax transforms needed by _target environment_. _Target environments_ are just browsers and user-agents; so this package is capable to choose in an automated manner which syntax must be transpiled depending on the [scope of targets](https://github.com/browserslist/browserslist) set up. 
-
+  This package can be summarized as "a babel preset for each environment". In other words this mean that this package allows to use the latest javascript without needing to manage syntax transforms needed by _target environment_. _Target environments_ are just browsers and user-agents; so this package is capable to choose in an automated manner which syntax must be transpiled depending on the [scope of targets](https://github.com/browserslist/browserslist) set up. Installation goes as follows
+    ```
+    npm install @babel/preset-env
+    ```
+1. **babel-loader**  
+  `vue-loader` is a [loader](https://webpack.js.org/loaders/) for `webpack` what uses `@vue/component-compiler-utils` under the hood. We can assume `vue-loader` as a _loader_ what loads _Vue's SFC_ code and compiles it to Vanilla Javascript. Installation goes as follows:  
+    ```
+    npm install vue-loader
+    ```
 ### Development from scratch
 #### System and Global Requirements
 These requirements, described above, have to be installed before starting this project. So, once `git` and `nodejs` are installed, and their binaries are added to `PATH` we can proceed with Global requirements using a terminal, with:
@@ -244,3 +251,34 @@ Then, we won't need (by the moment) our `es6.bundle.js`, `babel.config.js` and `
 git rm dist/es6.bundle.js babel.config.js dist/ES5/main.js dist/ES5/components/greetings.js
 ```
 
+#### Vue Single File Component
+As described in the project's summary, our intention is to build a SAP using Vue components. If we take an outlook at [Vue documentation](https://vuejs.org/v2/guide/single-file-components.html), it is recommended to use SFCs (Single-File Components) to face minor-sized application common problems.  
+
+So let's [start renaming](../../commit/0591b8d) our `greetings.mjs` component file onto `greetings.vue`, with:
+```
+git mv src/components/greetings.mjs src/components/greetings.vue
+```
+  
+After that, [our component code must suffer an inner conversion](../63c591a/src/components/greetings.vue#L1-L9), wrapping all its javascript code with a `<script>` tag, this way:  
+```
+<script>
+const GreetingComponent = {
+    template: `
+    <h1>{{ this.$parent.greeting }}</h1>
+    `
+}
+
+export default GreetingComponent
+</script>
+```
+
+Then, our `main.mjs` has to update its corresponding [import instruction](../8a096c0/src/main.mjs#L1).
+
+#### Loading our SFC
+As explained in the [`vue-loader` documentation](https://vue-loader.vuejs.org/#what-is-vue-loader) it is necessary to use this specific _loader_.  
+_vue-loader_ is known to depend on a _NodeJS_ enviroment and is strictly designed for _webpack_; but initially, we want to check our project without the need of _webpack_.  
+
+##### Loading via http-vue-loader
+Therefore there is an **unofficial** version of _vue-loader_ called `http-vue-loader` ([visit here its github repo](https://github.com/FranckFreiburger/http-vue-loader)), what frees us from building our component and can help us check our SFC component is running.
+
+So we need just a [few changes in our `index.html`](../../commit/e81eaa6#diff-eacf331f0ffc35d4b482f1d15a887d3b),  in [our `greetings.vue`](../e81eaa6/src/components/greetings.vue#L8) and also to [our `main.mjs`](../../commit/e81eaa6#diff-2679527f6e24e0cc7252aa29f829f274). 
