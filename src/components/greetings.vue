@@ -1,9 +1,8 @@
-<script>
-const GreetingComponent = {
-    template: `
+<template>
     <h1>{{ this.$parent.greeting }}</h1>
-    `
-}
+</template>
 
-module.exports = GreetingComponent
+<script>
+export default {
+}
 </script>
