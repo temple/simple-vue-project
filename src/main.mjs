@@ -11,7 +11,16 @@ let app = new Vue({
     discordURL: 'https://chat.vuejs.org',
     forumURL: 'http://forum.vuejs.org/'
   },
-  render(h){return h(App);},
+  render(h){
+    let greeting = this.greeting
+    return h( App, {
+                    scopedSlots:{
+                      greetings: function(){
+                        return h(greetings,{props:{greeting:greeting}})
+                      }
+                  }
+            });
+  },
   methods: {
     humanizeURL: url => url
         .replace(/^https?:\/\//, '')
