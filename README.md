@@ -333,3 +333,64 @@ Also, previous [modifications done in `index.html` are no longer necessary](../.
 As explained perfectly in the [official _Vue_ documentation](https://vuejs.org/v2/guide/single-file-components.html#What-About-Separation-of-Concerns), Single File Components carry a separation of concerns by [dividing in language blocks the code what a SFC is compound of](https://vue-loader.vuejs.org/spec.html).  
 
 In consequence [few minor changes](../../commit/0127af3#diff-c60fbef0c98b7e426a482e8e0e37fec2) are desirable in our _greetings_ SFC, including reusing `exports` instead of `module.export` as we don't need `http-vue-loader` anymore (which required it).
+
+#### Major improvements in our project
+
+##### Reducing Vue footprint
+Currently we are using the full production _Vue_ library. But, **is it really necessary?**.  
+The answer is **NO**, as we can deduce from this [README explanations](https://unpkg.com/browse/vue@2.6.11/dist/README.md).  
+We might have enough just with the production _runtime_ version of _Vue_ library file.  
+Then, _Vue_'s footprint [may be reduced by replacing our `<script>` source](../8995183/index.html#L5) in the `index.html`.
+
+But, as [warned in the Vue's API `el` entry](https://es.vuejs.org/v2/api/#el):
+> If this option is available at instantiation, the instance will immediately enter compilation; otherwise, the user will have to explicitly call `vm.$mount()`` to manually start the compilation.
+
+Moreover documentation states that:
+> If neither render function nor template option is present, the in-DOM HTML of the mounting DOM element will be extracted as the template. In this case, Runtime + Compiler build of Vue should be used.
+
+So, we may refuse using `el` option when creating the _Vue_ instance.
+In this case, there is a unique exit way, which passes by calling `$mount` after [creating the instance in our `main.mjs`](../a13bfe6/src/main.mjs#L20).  
+But this change is not enough because we haven't defined how our application has to be rendered. Therefore,[`render` option may be defined](../a13bfe6/src/main.mjs#L14) this way:
+```
+  render(h){ return h(App);}
+```
+
+With this previous `render` definition, [according to _Vue_'s documentation](https://vuejs.org/v2/guide/render-function.html), we're telling _Vue_ to use a component called _App_ for application rendering.  
+That's why we won't use anymore the _html_ code inside the `<div id="app">` at the `index.html` for rendering our application, because ain't no longer possible due the new _Vue_ build we are using currently (which is not able to compile that _html_ at runtime).  
+  
+Then, in order to retain the original _html_ code which was used to render our application, [we have to move it](../../commit/7c64223#diff-eacf331f0ffc35d4b482f1d15a887d3b) into a [new _Application SFC_ called `App.vue`](../7c64223/src/App.vue#L2-L25).  
+This new _SFC_ may have the original _html_ code inside its `<template>` part, and need the following `javascript` code:  
+```
+<script>
+export default {
+  name: "App"
+}
+</script>
+```
+
+###### Accessing "components" from new App SFC
+But because our `App.vue` _html_ code (inside `<template>`) [includes the _greetings SFC_ component tag](../7c64223/src/App.vue#L4) (`<greetings>`) we need to make it available to our new _App SFC_.  
+There are two different approaches:  
+1. Pass the component from `main.mjs` _Vue_ instance to _App_ by using properties ([learn about on the official _Vue_'s website](https://vuejs.org/v2/guide/components-props.html))
+1. Access to _Vue_ instance `components` property from _App_ component.
+
+I our case, and just for learning purposes, second option is chosen.  
+Then, next question is **How?**.  
+Answer is easy, once you've read about the [_Vue_'s instance _lifecycle_](https://vuejs.org/v2/guide/instance.html#Lifecycle-Diagram) (which also applies to _Vue_'s components and _SFC_s).  
+Now we know [we can use _lifecycle hooks_ such `created`](https://vuejs.org/v2/guide/instance.html#Instance-Lifecycle-Hooks) for running code after our component instance is created, what will happen after _Vue_'s instance creation, as we'll discuss below.  
+  
+Consequently, we [may define a `created` function](../7c64223/src/App.vue#L30-L32) which feeds our _App_ component `components` property with the _Vue_ instance `components` one using the following code:  
+```
+<script>
+export default {
+  name: "App",
+  created(){
+    this.$options.components = this.$parent.$options.components
+  }
+}
+</script>
+```
+
+> In previous snippet, `created` function syntax allows use to refer `this` expecting it to be the _App_ component itself rather than _node_'s `Module` or _browser_'s `Window` objects.
+
+Finally, our `App.vue` _html_ code what has some [_Vue_'s template syntax](https://vuejs.org/v2/guide/syntax.html) which comes from `index.html` [require it's code references to be updated](../../commit/7c64223#diff-c60fbef0c98b7e426a482e8e0e37fec2) by using the same kind of _chain_ what has been used in the `created` function.
