@@ -1,8 +1,14 @@
 <template>
-    <h1>{{ this.$root.greeting }}</h1>
+    <h1>{{ greeting }}</h1>
 </template>
 
 <script>
 export default {
+    props:{
+        "greeting":{
+            required: true,
+            type: String
+        }
+    }
 }
 </script>
