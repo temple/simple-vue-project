@@ -1,7 +1,7 @@
 <template>
     <div id="app">
         <img src="https://vuejs.org/images/logo.png" alt="Vue logo">
-        <greetings></greetings>
+        <slot name="greetings"></slot>
         <ul>
           <li>
             To learn more about Vue, visit
@@ -27,8 +27,5 @@
 <script>
   export default{
     name: "App",   
-    created(){
-      this.$options.components = this.$parent.$options.components;
-    }     
   }
 </script>
