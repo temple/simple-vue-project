@@ -394,3 +394,47 @@ export default {
 > In previous snippet, `created` function syntax allows use to refer `this` expecting it to be the _App_ component itself rather than _node_'s `Module` or _browser_'s `Window` objects.
 
 Finally, our `App.vue` _html_ code what has some [_Vue_'s template syntax](https://vuejs.org/v2/guide/syntax.html) which comes from `index.html` [require it's code references to be updated](../../commit/7c64223#diff-c60fbef0c98b7e426a482e8e0e37fec2) by using the same kind of _chain_ what has been used in the `created` function.
+
+###### Passing "components" to new App SFC
+I we want to try the first approach, "_Pass the component from `main.mjs`_  Vue _instance to_ App _by using properties_", the first thing what comes into mind is using properties to pass values from top-level _Vue_'s object instances to their children.  
+
+In our application the bottom-level instance is the _Greetings SFC_. And this component is using `this.$root.greeting` reference in its `<template>` code for accessing the _greeting_ data defined in `main.mjs`.  
+Under current approach, this is not what we pursuit. Our steps may pass across defining necessary properties for the component to be rendered autonomously.  
+Then a [new `greeting` property may be defined in `greetings.vue`](../cf0a973/src/components/greetings.vue#L7-12) this way:
+```
+  props:{
+      "greeting":{
+          required: true,
+          type: String
+      }
+  }
+```
+And therefore, [its template may use this new property](../cf0a973/src/components/greetings.vue#L2) instead of accessing _Vue's_ data.
+
+Because of our _Greetings_ component may be considered plenty autonomous, ¿how can `main.mjs` pass to `App.vue` in a formal manner?  
+One possible answer in by [using _slots_](https://vuejs.org/v2/guide/components-slots.html), whose allow components receive _html_ and even _components_ as content to be rendered in their `<templates>`.  
+  
+If we explore this way of passing a component, we should open an slot on _App SFC_ template where previously the `<greetings>` tag was. So, [this tag would be replaced with](../76f00ce/src/App.vue#L4):
+```
+<slot name="greetings"></slot>
+```
+  
+Furthermore, because our _App SFC_ will receive the _Greetings_ component via _slot_, we no longer need to initialize the `components` option at creation time. So [`created` function has to be removed](../../commits/76f00ce#diff-ea994a51b0d9884f4fc046eca11a5c99).  
+  
+Finally, the remaining challenge it to effectively pass the component from _Vue_'s main instance to the _App SFC_. This task might be performed when rendering _Vue_, because we are not providing any main template.  
+That's why our `render` function may now receive [an optional second argument](https://vuejs.org/v2/guide/render-function.html#The-Data-Object-In-Depth), containing the slot what we are gonna fill.  
+This is how `render` looks like now:  
+```
+  render(h){
+    let greeting = this.greeting
+    return h(App, {
+                    scopedSlots:{
+                      greetings: function(){
+                        return h(greetings,{props:{greeting:greeting}})
+                      }
+                  }
+            });
+  },
+```
+
+As we can see, [what in the past was just `return h(App)`, has evolved onto a 2 arguments call](../../commit/d055c21#diff-2679527f6e24e0cc7252aa29f829f274), where the second argument refers the `<slot>` named greetings and provides a function for filling it. This function creates a _Greetings SFC_ and passes the `greeting` onto the component `greeting` property.
