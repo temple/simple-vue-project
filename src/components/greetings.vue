@@ -1,5 +1,5 @@
 <template>
-    <h1>{{ this.$parent.greeting }}</h1>
+    <h1>{{ this.$root.greeting }}</h1>
 </template>
 
 <script>
