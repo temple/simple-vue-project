@@ -1,10 +1,10 @@
 # VUE Simple Project
 ## Metadata
 
-| Vue Simple Project | A vue simple template project for training |
+| Vue Simple Project | A vue-cli 4.0 PWA project started from a simple Vue-cli 2.0 template |
 | :--- | :--- |
-| **Description** | This is a training project with the goal of learning the _basics_ of a [_vue_](https://vuejs.org) _simple_ project. |
-| **Languages** | This project is written purely over [_HTML 5_](https://html.spec.whatwg.org/multipage/) and [_ES6 Javascript_](http://es6-features.org/),[_JSON_](https://www.json.org/json-en.html) | 
+| **Description** | This is a training project targeting the goal of making a _PWA_ from scratch while learning the _idiosyncrasy_ of a modern [_Vue_](https://vuejs.org) project. |
+| **Languages** | This project is been written purely over [_HTML 5_](https://html.spec.whatwg.org/multipage/) and [_ES6 Javascript_](http://es6-features.org/),[_JSON_](https://www.json.org/json-en.html) | 
 | **Techs & Tools** | This project involves the use of [_git_](https://git-scm.com/downloads), [_nodejs_](https://nodejs.org/) and its packages [_lite-server_](https://github.com/johnpapa/lite-server), [_@vue/cli_](https://cli.vuejs.org/) (with its _addon_ [_@vue/cli-init_](https://www.npmjs.com/package/@vue/cli-init). It also has required the use of _node_ packages [_webpack_](https://webpack.js.org/), [_webpack-cli_](https://www.npmjs.com/package/webpack-cli), [_@babel/core_](https://babeljs.io/), [_@babel/cli_](https://babeljs.io/docs/en/babel-cli), [_babel-loader_](https://www.npmjs.com/package/babel-loader),  [_@babel/preset-env_](https://babeljs.io/docs/en/babel-preset-env) and [_vue-loader_](https://www.npmjs.com/package/vue-loader)
 | **Thanks to** | [Juan Andrés Núñez (@wmedia)](https://github.com/juanwmedia), for [his wonderful podcast on youtube](https://www.youtube.com/playlist?list=PLM-Y_YQmMEqDS5u_O4xB651Mli0ShWyfh)  |
 | **Credits** | [temple](https://github.com/temple) | 
